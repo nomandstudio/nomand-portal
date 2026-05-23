@@ -483,10 +483,8 @@ async function doLogin() {
 }
 
 function doLogout() {
-  const s = gs();
-  if (!s.remember) localStorage.removeItem('nm_s');
-  document.getElementById('portal-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
+  localStorage.removeItem('nm_s');
+  window.location.href = 'https://nomand-studio-9e2abe.webflow.io';
 }
 
 function showPortal(user) {
