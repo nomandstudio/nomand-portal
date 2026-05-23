@@ -45,7 +45,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
+  background: #0f0f0f;
   position: relative;
   overflow: hidden;
 }
@@ -73,13 +73,13 @@ body {
 .login-card {
   width:100%;
   max-width:400px;
-  background: rgba(255,255,255,0.32);
-  border: 1px solid rgba(255,255,255,0.9);
+  background: rgba(15,15,15,0.75);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 28px;
   padding: 44px 40px;
-  backdrop-filter: blur(40px) saturate(2);
-  -webkit-backdrop-filter: blur(40px) saturate(2);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.95), inset 0 -1px 1px rgba(0,0,0,0.02);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.08);
   position:relative;
   z-index:1;
 }
@@ -89,38 +89,38 @@ body {
   margin-bottom:32px;
 }
 .l-logo img { width:26px; height:26px; object-fit:contain; }
-.l-logo span { font-size:12px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--text); }
+.l-logo span { font-size:12px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,255,255,0.7); }
 
-.l-title { font-size:24px; font-weight:300; color:var(--text); margin-bottom:4px; }
-.l-sub { font-size:13px; color:var(--text2); margin-bottom:28px; line-height:1.5; }
+.l-title { font-size:24px; font-weight:300; color:rgba(255,255,255,0.9); margin-bottom:4px; }
+.l-sub { font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:28px; line-height:1.5; }
 
 .f-group { margin-bottom:14px; }
-.f-group label { display:block; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text3); font-weight:700; margin-bottom:6px; }
+.f-group label { display:block; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.3); font-weight:700; margin-bottom:6px; }
 .f-group input {
   width:100%;
   padding:12px 15px;
-  background:rgba(255,255,255,0.6);
-  border:1px solid rgba(0,0,0,0.09);
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
   border-radius:11px;
   font-family:inherit;
   font-size:14px;
-  color:var(--text);
+  color:white;
   outline:none;
   transition:border-color 0.2s, box-shadow 0.2s;
 }
 .f-group input:focus {
-  border-color: var(--orange);
+  border-color: rgba(243,146,0,0.5);
   box-shadow: 0 0 0 3px rgba(243,146,0,0.12);
-  background:#fff;
+  background:rgba(255,255,255,0.08);
 }
-.f-group input::placeholder { color:var(--text3); }
+.f-group input::placeholder { color:rgba(255,255,255,0.25); }
 
 .remember {
   display:flex; align-items:center; gap:7px;
   margin-bottom:18px; margin-top:2px;
 }
 .remember input { accent-color:var(--orange); }
-.remember label { font-size:12px; color:var(--text2); cursor:pointer; }
+.remember label { font-size:12px; color:rgba(255,255,255,0.4); cursor:pointer; }
 
 .btn-main {
   width:100%;
@@ -134,13 +134,13 @@ body {
   color:#fff;
   cursor:pointer;
   transition:opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 4px 16px rgba(243,146,0,0.30);
+  box-shadow: 0 4px 20px rgba(243,146,0,0.35);
 }
-.btn-main:hover { opacity:0.92; transform:translateY(-1px); box-shadow:0 6px 20px rgba(243,146,0,0.38); }
+.btn-main:hover { opacity:0.92; transform:translateY(-1px); box-shadow:0 6px 20px rgba(243,146,0,0.45); }
 .btn-main:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
 
-.l-err { font-size:12px; color:var(--red); text-align:center; margin-top:10px; display:none; }
-.l-help { font-size:11px; color:var(--text3); text-align:center; margin-top:18px; line-height:1.6; }
+.l-err { font-size:12px; color:#ff453a; text-align:center; margin-top:12px; display:none; background:rgba(255,69,58,0.1); border:1px solid rgba(255,69,58,0.2); border-radius:8px; padding:8px; }
+.l-help { font-size:11px; color:rgba(255,255,255,0.25); text-align:center; margin-top:18px; line-height:1.6; }
 
 /* ── PORTAL ── */
 #portal-screen { display:none; }
@@ -379,7 +379,7 @@ body {
 <div id="login-screen">
   <div class="login-card">
     <div class="l-logo">
-      <img src="./logo.png" alt="N" onerror="this.style.display='none'">
+      <img src="https://cdn.prod.website-files.com/6a0284e59b4361db568fb80e/6a0417eda0998bb179d2f25c_Logo-pagina.png" alt="N" onerror="this.style.display='none'">
       <span>Nomand Studio</span>
     </div>
     <div class="l-title">Portal del colaborador</div>
@@ -409,7 +409,7 @@ body {
   <div class="topbar">
     <div class="tb-left">
       <div class="tb-logo" style="display:flex;align-items:center;gap:8px;">
-        <img src="./logo.png" style="width:20px;height:20px;object-fit:contain" alt="">
+        <img src="https://cdn.prod.website-files.com/6a0284e59b4361db568fb80e/6a0417eda0998bb179d2f25c_Logo-pagina.png" style="width:20px;height:20px;object-fit:contain" alt="">
         <span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--text)">Nomand</span>
       </div>
     </div>
@@ -836,7 +836,7 @@ function showSetPassword(accessToken) {
   div.style.cssText = 'min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f2f0ec 0%,#ede9e3 100%);';
   div.innerHTML = `<div style="background:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.88);border-radius:24px;padding:44px 40px;max-width:400px;width:100%;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.10);">
     <div style="display:flex;align-items:center;gap:9px;margin-bottom:32px;">
-      <img src="./logo.png" style="width:26px;height:26px;object-fit:contain" onerror="this.style.display='none'">
+      <img src="https://cdn.prod.website-files.com/6a0284e59b4361db568fb80e/6a0417eda0998bb179d2f25c_Logo-pagina.png" style="width:26px;height:26px;object-fit:contain" onerror="this.style.display='none'">
       <span style="font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#1c1c1e;font-family:inherit;">Nomand Studio</span>
     </div>
     <div style="font-size:24px;font-weight:300;color:#1c1c1e;margin-bottom:6px;font-family:inherit;">Crea tu contraseña 🏔</div>
