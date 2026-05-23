@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal — Nomand Studio</title>
+<link rel="stylesheet" href="https://use.typekit.net/dac6yfv.css">
+<style>
+:root {
+  --orange: #F39200;
+  --orange-10: rgba(243,146,0,0.10);
+  --orange-20: rgba(243,146,0,0.20);
+  --bg: #f2f0ec;
+  --card: rgba(255,255,255,0.72);
+  --card-border: rgba(255,255,255,0.85);
+  --glass: rgba(255,255,255,0.55);
+  --glass-border: rgba(255,255,255,0.75);
+  --text: #1c1c1e;
+  --text2: #6c6c70;
+  --text3: #aeaeb2;
+  --green: #34c759;
+  --green-10: rgba(52,199,89,0.12);
+  --red: #ff3b30;
+  --shadow: 0 2px 16px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'century-gothic','Century Gothic',sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── LOGIN ── */
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f2f0ec 0%, #ede9e3 100%);
+  position: relative;
+}
+
+#login-screen::before {
+  content:'';
+  position:absolute;
+  width:500px; height:500px;
+  top:-100px; right:-100px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(243,146,0,0.08) 0%, transparent 65%);
+  pointer-events:none;
+}
+
+.login-card {
+  width:100%;
+  max-width:400px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 44px 40px;
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow: var(--shadow-lg), inset 0 1px 1px rgba(255,255,255,0.9);
+  position:relative;
+  z-index:1;
+}
+
+.l-logo {
+  display:flex; align-items:center; gap:9px;
+  margin-bottom:32px;
+}
+.l-logo img { width:26px; height:26px; object-fit:contain; }
+.l-logo span { font-size:12px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--text); }
+
+.l-title { font-size:24px; font-weight:300; color:var(--text); margin-bottom:4px; }
+.l-sub { font-size:13px; color:var(--text2); margin-bottom:28px; line-height:1.5; }
+
+.f-group { margin-bottom:14px; }
+.f-group label { display:block; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text3); font-weight:700; margin-bottom:6px; }
+.f-group input {
+  width:100%;
+  padding:12px 15px;
+  background:rgba(255,255,255,0.6);
+  border:1px solid rgba(0,0,0,0.09);
+  border-radius:11px;
+  font-family:inherit;
+  font-size:14px;
+  color:var(--text);
+  outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s;
+}
+.f-group input:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(243,146,0,0.12);
+  background:#fff;
+}
+.f-group input::placeholder { color:var(--text3); }
+
+.remember {
+  display:flex; align-items:center; gap:7px;
+  margin-bottom:18px; margin-top:2px;
+}
+.remember input { accent-color:var(--orange); }
+.remember label { font-size:12px; color:var(--text2); cursor:pointer; }
+
+.btn-main {
+  width:100%;
+  padding:13px;
+  background:var(--orange);
+  border:none;
+  border-radius:100px;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:700;
+  color:#fff;
+  cursor:pointer;
+  transition:opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(243,146,0,0.30);
+}
+.btn-main:hover { opacity:0.92; transform:translateY(-1px); box-shadow:0 6px 20px rgba(243,146,0,0.38); }
+.btn-main:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+
+.l-err { font-size:12px; color:var(--red); text-align:center; margin-top:10px; display:none; }
+.l-help { font-size:11px; color:var(--text3); text-align:center; margin-top:18px; line-height:1.6; }
+
+/* ── PORTAL ── */
+#portal-screen { display:none; }
+
+.topbar {
+  position:sticky;
+  top:0;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 32px;
+  height:56px;
+  background: rgba(242,240,236,0.82);
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  border-bottom: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+}
+
+.tb-left { display:flex; align-items:center; gap:10px; }
+.tb-logo img { width:20px; height:20px; object-fit:contain; }
+.tb-logo span { font-size:11px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--text); }
+
+.tb-right { display:flex; align-items:center; gap:12px; }
+
+.tb-user {
+  display:flex; align-items:center; gap:8px;
+  padding:5px 12px 5px 6px;
+  background:rgba(255,255,255,0.6);
+  border:1px solid rgba(255,255,255,0.85);
+  border-radius:100px;
+  backdrop-filter:blur(8px);
+  cursor:default;
+}
+.tb-av {
+  width:26px; height:26px;
+  border-radius:50%;
+  background:var(--orange);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:#fff;
+  text-transform:uppercase;
+}
+.tb-uname { font-size:12px; font-weight:700; color:var(--text); }
+
+.btn-out {
+  padding:6px 14px;
+  background:rgba(255,255,255,0.5);
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:100px;
+  font-family:inherit;
+  font-size:12px;
+  color:var(--text2);
+  cursor:pointer;
+  transition:background 0.15s;
+  backdrop-filter:blur(8px);
+}
+.btn-out:hover { background:rgba(255,255,255,0.85); color:var(--text); }
+
+/* Dashboard */
+.dash {
+  max-width:100%;
+  margin:0 auto;
+  padding:32px 40px 64px;
+}
+
+/* Welcome */
+.welcome {
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:20px;
+  padding:28px 32px;
+  margin-bottom:24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.w-date { font-size:11px; color:var(--text3); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:5px; }
+.w-title { font-size:22px; font-weight:300; color:var(--text); margin-bottom:3px; }
+.w-sub { font-size:13px; color:var(--text2); }
+.w-badge {
+  display:flex; align-items:center; gap:7px;
+  padding:8px 16px;
+  background:var(--orange-10);
+  border:1px solid var(--orange-20);
+  border-radius:100px;
+  font-size:12px;
+  color:var(--orange);
+  font-weight:700;
+  white-space:nowrap;
+  backdrop-filter:blur(8px);
+}
+
+/* Row layouts */
+.row { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+.row-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:16px; }
+.col-full { grid-column:1/-1; }
+
+/* Card base */
+.card {
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:18px;
+  padding:22px 24px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(12px) saturate(1.4);
+  -webkit-backdrop-filter:blur(12px) saturate(1.4);
+  transition:box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+}
+.card:hover { box-shadow:var(--shadow-lg); }
+
+.card-tag { font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); font-weight:700; margin-bottom:6px; }
+.card-title { font-size:17px; font-weight:400; color:var(--text); margin-bottom:10px; }
+.card-body { font-size:13px; color:var(--text2); line-height:1.6; }
+
+/* Badge */
+.badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:100px; font-size:11px; font-weight:700; }
+.b-orange { background:var(--orange-10); color:var(--orange); }
+.b-green { background:var(--green-10); color:var(--green); }
+.b-gray { background:rgba(0,0,0,0.06); color:var(--text2); }
+
+/* Progress */
+.prog { margin-top:14px; }
+.prog-row { display:flex; justify-content:space-between; font-size:11px; color:var(--text2); margin-bottom:6px; }
+.prog-track { height:5px; background:rgba(0,0,0,0.07); border-radius:100px; overflow:hidden; }
+.prog-fill { height:100%; background:var(--orange); border-radius:100px; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+
+/* Payment amounts */
+.pay-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
+.pay-item {}
+.pay-label { font-size:10px; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:3px; }
+.pay-amount { font-size:21px; font-weight:700; }
+
+/* Files section */
+.files-wrap {}
+.type-section { margin-bottom:20px; }
+.type-head {
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:10px;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.type-ico { font-size:16px; }
+.type-name { font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text); }
+.type-count { font-size:11px; color:var(--text3); margin-left:auto; }
+
+.folder-label {
+  font-size:11px; color:var(--text3);
+  letter-spacing:0.06em; text-transform:uppercase;
+  margin:10px 0 6px;
+  display:flex; align-items:center; gap:5px;
+}
+
+.files-list { display:flex; flex-direction:column; gap:5px; }
+
+.file-item {
+  display:flex; align-items:center; gap:11px;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.5);
+  border:1px solid rgba(255,255,255,0.8);
+  border-radius:11px;
+  text-decoration:none;
+  transition:background 0.15s, border-color 0.15s, transform 0.15s;
+  backdrop-filter:blur(8px);
+}
+.file-item:hover {
+  background:rgba(255,255,255,0.82);
+  border-color:rgba(243,146,0,0.25);
+  transform:translateX(2px);
+}
+.f-ico {
+  width:32px; height:32px;
+  border-radius:8px;
+  background:var(--orange-10);
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px;
+  flex-shrink:0;
+}
+.f-name { font-size:13px; color:var(--text); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.f-date { font-size:11px; color:var(--text3); flex-shrink:0; }
+.f-arr { font-size:13px; color:var(--text3); flex-shrink:0; margin-left:4px; }
+
+/* Upload */
+.upload-card {
+  border:1.5px dashed rgba(243,146,0,0.25);
+  background:rgba(255,255,255,0.4);
+}
+.upload-inner { text-align:center; padding:8px 0; }
+.upload-ico { font-size:32px; margin-bottom:10px; }
+.upload-title { font-size:16px; font-weight:400; color:var(--text); margin-bottom:5px; }
+.upload-sub { font-size:12px; color:var(--text2); margin-bottom:20px; line-height:1.5; }
+.drop-zone {
+  border:1px dashed rgba(0,0,0,0.12);
+  border-radius:10px;
+  padding:18px;
+  cursor:pointer;
+  transition:border-color 0.15s, background 0.15s;
+  margin-bottom:12px;
+}
+.drop-zone:hover { border-color:var(--orange); background:var(--orange-10); }
+.drop-zone input { display:none; }
+.drop-zone p { font-size:13px; color:var(--text2); }
+.drop-zone span { color:var(--orange); font-weight:700; }
+.upload-desc { width:100%; max-width:360px; padding:10px 14px; background:rgba(255,255,255,0.6); border:1px solid rgba(0,0,0,0.09); border-radius:9px; font-family:inherit; font-size:13px; color:var(--text); outline:none; margin-bottom:14px; }
+.upload-desc:focus { border-color:var(--orange); }
+
+/* Empty */
+.empty { text-align:center; padding:40px 20px; color:var(--text3); }
+.empty-ico { font-size:32px; margin-bottom:8px; opacity:0.4; }
+.empty-txt { font-size:13px; line-height:1.6; }
+
+/* Spinner */
+.spin-wrap { display:flex; align-items:center; justify-content:center; padding:40px; gap:8px; color:var(--text3); font-size:13px; }
+.spinner { width:16px; height:16px; border:2px solid rgba(0,0,0,0.1); border-top-color:var(--orange); border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* Mobile */
+@media(max-width:768px){
+  .topbar { padding:0 16px; }
+  .dash { padding:20px 16px 48px; }
+  .row,.row-3 { grid-template-columns:1fr; }
+  .welcome { flex-direction:column; gap:14px; align-items:flex-start; }
+  .pay-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="l-logo">
+      <img src="./logo.png" alt="N" onerror="this.style.display='none'">
+      <span>Nomand Studio</span>
+    </div>
+    <div class="l-title">Portal del colaborador</div>
+    <div class="l-sub">Ingresa para ver tu proyecto y archivos.</div>
+    <div class="f-group">
+      <label>Correo electrónico</label>
+      <input type="email" id="lemail" placeholder="correo@ejemplo.com" autocomplete="email">
+    </div>
+    <div class="f-group">
+      <label>Contraseña</label>
+      <input type="password" id="lpass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div class="remember">
+      <input type="checkbox" id="rem">
+      <label for="rem">Recordar mi cuenta</label>
+    </div>
+    <button class="btn-main" id="btnlogin" onclick="doLogin()">Entrar</button>
+    <div class="l-err" id="lerr">Correo o contraseña incorrectos.</div>
+    <div class="l-help">¿No tienes acceso?<br>nomand.studio@gmail.com</div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div id="portal-screen">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-logo" style="display:flex;align-items:center;gap:8px;">
+        <img src="./logo.png" style="width:20px;height:20px;object-fit:contain" alt="">
+        <span style="font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--text)">Nomand</span>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-user">
+        <div class="tb-av" id="uav">N</div>
+        <span class="tb-uname" id="uname">-</span>
+      </div>
+      <button class="btn-out" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dash" id="dash-content">
+    <div class="spin-wrap"><div class="spinner"></div> Cargando tu portal...</div>
+  </div>
+
+</div>
+
+<script>
+const SB = 'https://dowdutzyrsfncnwejpbt.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvd2R1dHp5cnNmbmNud2VqcGJ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMjM2ODMsImV4cCI6MjA5NDY5OTY4M30.pEhA8G87hjTfWT4kak2KFgUalM6vsQ36ftALzmGJ9vY';
+const FRASES = [
+  'Vamos a hacer que hoy valga.',
+  'Tu marca tiene algo especial — sigamos construyéndola.',
+  'Grandes cosas se hacen paso a paso.',
+  'Hoy es un buen día para crear.',
+  'Cada detalle importa. Sigamos.',
+  'El trabajo de hoy es el éxito de mañana.'
+];
+
+function ss(d) { try { localStorage.setItem('nm_s', JSON.stringify(d)); } catch{} }
+function gs() { try { return JSON.parse(localStorage.getItem('nm_s')||'{}'); } catch{ return {}; } }
+
+async function api(path, opts={}) {
+  const s = gs();
+  const r = await fetch(SB + path, {
+    ...opts,
+    headers: {
+      'apikey': KEY,
+      'Authorization': 'Bearer ' + (s.access_token || KEY),
+      'Content-Type': 'application/json',
+      ...(opts.headers||{})
+    }
+  });
+  return r.json();
+}
+
+async function doLogin() {
+  const email = document.getElementById('lemail').value.trim();
+  const pass = document.getElementById('lpass').value;
+  const err = document.getElementById('lerr');
+  const btn = document.getElementById('btnlogin');
+  err.style.display = 'none';
+  btn.textContent = 'Entrando...'; btn.disabled = true;
+
+  const r = await fetch(SB + '/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    headers: { 'apikey': KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: pass })
+  });
+  const d = await r.json();
+
+  if (d.access_token) {
+    ss({ ...d, remember: document.getElementById('rem').checked });
+    showPortal(d.user);
+  } else {
+    err.style.display = 'block';
+    btn.textContent = 'Entrar'; btn.disabled = false;
+  }
+}
+
+function doLogout() {
+  const s = gs();
+  if (!s.remember) localStorage.removeItem('nm_s');
+  document.getElementById('portal-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function showPortal(user) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('portal-screen').style.display = 'block';
+  const name = user.user_metadata?.nombre || user.email.split('@')[0];
+  document.getElementById('uname').textContent = name;
+  document.getElementById('uav').textContent = name[0].toUpperCase();
+  loadDash(user, name);
+}
+
+async function loadDash(user, name) {
+  const dash = document.getElementById('dash-content');
+
+  const s = gs();
+  
+  // Try to find client by user_id first
+  let clientes = await api('/rest/v1/clientes?user_id=eq.' + s.user.id + '&select=*');
+  
+  // If not found by user_id, try to link by email (first login after invite)
+  if (!clientes || !clientes.length) {
+    const byEmail = await api('/rest/v1/clientes?correo=eq.' + encodeURIComponent(user.email) + '&select=*');
+    if (byEmail && byEmail.length) {
+      // Link user_id to this client
+      await api('/rest/v1/clientes?id=eq.' + byEmail[0].id, {
+        method: 'PATCH',
+        body: JSON.stringify({ user_id: s.user.id })
+      });
+      clientes = byEmail;
+    }
+  }
+  
+  const c = clientes[0];
+
+  // Use real name from clientes table
+  const displayName = c?.nombre || name;
+  document.getElementById('uname').textContent = displayName.split(' ')[0];
+  document.getElementById('uav').textContent = displayName[0].toUpperCase();
+
+  const h = new Date().getHours();
+  const sal = h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
+  const frase = FRASES[Math.floor(Math.random() * FRASES.length)];
+  const now = new Date();
+  const fecha = now.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  let proyHTML = '', pagosHTML = '', archHTML = '';
+
+  if (c) {
+    const [projs, archs] = await Promise.all([
+      api('/rest/v1/proyectos?cliente_id=eq.' + c.id),
+      api('/rest/v1/archivos?cliente_id=eq.' + c.id + '&publicado=eq.true&order=fecha.desc')
+    ]);
+
+    // Proyectos
+    if (projs.length) {
+      const p = projs[0];
+      proyHTML = `
+        <div class="card">
+          <div class="card-tag">Mi proyecto</div>
+          <div class="card-title">${p.nombre}</div>
+          <span class="badge ${p.estado==='Completado'?'b-green':'b-orange'}">${p.estado||'En proceso'}</span>
+          ${p.paquete ? `<div class="card-body" style="margin-top:8px">${p.paquete}</div>` : ''}
+          ${p.descripcion ? `<div class="card-body" style="margin-top:6px">${p.descripcion}</div>` : ''}
+          ${p.fecha_entrega ? `<div style="font-size:11px;color:var(--text3);margin-top:10px">📅 Entrega: ${new Date(p.fecha_entrega).toLocaleDateString('es-MX',{day:'numeric',month:'long',year:'numeric'})}</div>` : ''}
+        </div>`;
+
+      pagosHTML = `
+        <div class="card">
+          <div class="card-tag">Estado de pago</div>
+          <div class="pay-grid">
+            <div class="pay-item">
+              <div class="pay-label">Total</div>
+              <div class="pay-amount" style="color:var(--text)">$${(p.total_a_cobrar||0).toLocaleString()}</div>
+            </div>
+            <div class="pay-item">
+              <div class="pay-label">Pagado</div>
+              <div class="pay-amount" style="color:var(--green)">$${(p.pagado||0).toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="prog">
+            <div class="prog-row">
+              <span>${p.porcentaje_pagado||0}% completado</span>
+              <span>Resta $${((p.total_a_cobrar||0)-(p.pagado||0)).toLocaleString()}</span>
+            </div>
+            <div class="prog-track"><div class="prog-fill" style="width:${p.porcentaje_pagado||0}%"></div></div>
+          </div>
+        </div>`;
+    }
+
+    // Archivos agrupados
+    if (archs.length) {
+      const tipos = ['Brief','Contrato','Cronograma','Entregables','Solicitados'];
+      const icos = {Brief:'📄',Contrato:'📋',Cronograma:'📅',Entregables:'🏔',Solicitados:'📎'};
+      const grouped = {};
+      archs.forEach(a => {
+        const t = a.tipo||'Entregables';
+        if(!grouped[t]) grouped[t] = {};
+        const f = a.carpeta||'';
+        if(!grouped[t][f]) grouped[t][f] = [];
+        grouped[t][f].push(a);
+      });
+
+      archHTML = `<div class="card col-full">
+        <div class="card-tag">Archivos</div>
+        <div class="card-title" style="margin-bottom:18px">${archs.length} archivo${archs.length!==1?'s':''} disponibles</div>
+        <div class="files-wrap">
+          ${tipos.filter(t=>grouped[t]).map(tipo=>`
+            <div class="type-section">
+              <div class="type-head">
+                <span class="type-ico">${icos[tipo]||'📁'}</span>
+                <span class="type-name">${tipo}</span>
+                <span class="type-count">${Object.values(grouped[tipo]).flat().length}</span>
+              </div>
+              ${Object.entries(grouped[tipo]).map(([carpeta,files])=>`
+                ${carpeta?`<div class="folder-label">📁 ${carpeta}</div>`:''}
+                <div class="files-list">
+                  ${files.map(f=>`
+                    <a class="file-item" href="${f.link_drive}" target="_blank">
+                      <div class="f-ico">${fIco(f.nombre)}</div>
+                      <span class="f-name">${f.nombre}</span>
+                      <span class="f-date">${f.fecha?new Date(f.fecha).toLocaleDateString('es-MX',{day:'numeric',month:'short'}):''}</span>
+                      <span class="f-arr">→</span>
+                    </a>
+                  `).join('')}
+                </div>
+              `).join('')}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    } else {
+      archHTML = `<div class="card col-full"><div class="empty"><div class="empty-ico">◻</div><div class="empty-txt">No hay archivos aún.</div></div></div>`;
+    }
+  } else {
+    proyHTML = `<div class="card"><div class="empty"><div class="empty-ico">🏔</div><div class="empty-txt">Tu cuenta está siendo configurada.<br>nomand.studio@gmail.com</div></div></div>`;
+    pagosHTML = `<div class="card"><div class="empty"><div class="empty-ico">$</div><div class="empty-txt">Sin información de pagos aún.</div></div></div>`;
+    archHTML = `<div class="card col-full"><div class="empty"><div class="empty-ico">◻</div><div class="empty-txt">No hay archivos aún.</div></div></div>`;
+  }
+
+  let selFiles = [];
+
+  dash.innerHTML = `
+    <!-- Welcome -->
+    <div class="welcome">
+      <div>
+        <div class="w-date">${fecha}</div>
+        <div class="w-title">${sal}, ${name.split(' ')[0]} 👋</div>
+        <div class="w-sub">${frase}</div>
+      </div>
+      <div class="w-badge">🏔 Nomand Studio</div>
+    </div>
+
+    <!-- Proyecto + Pagos -->
+    <div class="row">
+      ${proyHTML}
+      ${pagosHTML}
+    </div>
+
+    <!-- Archivos -->
+    <div class="row">
+      ${archHTML}
+    </div>
+
+    <!-- Solicitados + Pendientes -->
+    <div class="row">
+      <div class="card upload-card">
+        <div class="upload-inner">
+          <div class="upload-ico">📎</div>
+          <div class="upload-title">Solicitados</div>
+          <div class="upload-sub">Comparte fotos, PDFs, videos o audios con el equipo de Nomand.</div>
+          <div class="drop-zone" onclick="document.getElementById('finput').click()">
+            <input type="file" id="finput" multiple onchange="onFiles(this)">
+            <p>Arrastra o <span>selecciona archivos</span></p>
+          </div>
+          <div id="flist"></div>
+          <input class="upload-desc" type="text" id="fdesc" placeholder="Descripción (opcional)">
+          <button class="btn-main" style="max-width:180px;margin:0 auto;display:block" onclick="doUpload('${user.email}')">Enviar archivos</button>
+          <p id="fstatus" style="font-size:12px;color:var(--text3);margin-top:10px;text-align:center"></p>
+        </div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:0;">
+        <div class="card-tag">Pendientes</div>
+        <div class="card-title" style="margin-bottom:14px">Lo que necesitamos de ti</div>
+        <div id="pendientes-list" style="flex:1;display:flex;flex-direction:column;gap:6px;">
+          <div class="empty"><div class="empty-ico" style="font-size:20px">✅</div><div class="empty-txt" style="font-size:12px">Sin pendientes por ahora.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="row" id="mini-bars"></div>
+  `;
+
+  // Load contrato + brief mini bars separately
+  Promise.all([
+    c ? api('/rest/v1/archivos?cliente_id=eq.'+c.id+'&tipo=eq.Contrato&publicado=eq.true&order=fecha.desc&limit=1') : Promise.resolve([]),
+    c ? api('/rest/v1/archivos?cliente_id=eq.'+c.id+'&tipo=eq.Brief&publicado=eq.true&order=fecha.desc&limit=1') : Promise.resolve([])
+  ]).then(([contratos, briefs]) => {
+    const el = document.getElementById('mini-bars');
+    if (el) el.innerHTML = miniBar('Contrato','📋',contratos) + miniBar('Brief','📄',briefs);
+  });
+}
+
+function miniBar(tipo, ico, files) {
+  const f = files[0];
+  return `<div class="card" style="padding:16px 20px;display:flex;align-items:center;gap:14px;">
+    <div style="width:36px;height:36px;border-radius:9px;background:var(--orange-10);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">${ico}</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:2px;">${tipo}</div>
+      ${f ? `<div style="font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.nombre}</div>
+      <div style="font-size:11px;color:var(--text3);">${f.fecha ? new Date(f.fecha).toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'}) : ''}</div>`
+      : `<div style="font-size:13px;color:var(--text3);">Sin ${tipo.toLowerCase()} aún</div>`}
+    </div>
+    ${f ? `<a href="${f.link_drive}" target="_blank" style="padding:7px 14px;background:var(--orange-10);border:1px solid var(--orange-20);border-radius:100px;font-size:12px;font-weight:700;color:var(--orange);text-decoration:none;white-space:nowrap;flex-shrink:0;">Ver →</a>` : ''}
+  </div>`;
+}
+
+function sendMsg(email) {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const msgs = document.getElementById('chat-msgs');
+  const now = new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+  msgs.innerHTML += `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+    <div style="padding:8px 12px;background:var(--orange-10);border:1px solid var(--orange-20);border-radius:12px 12px 3px 12px;font-size:13px;color:var(--text);max-width:85%;">${msg}</div>
+    <div style="font-size:10px;color:var(--text3);">${now}</div>
+  </div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  input.value = '';
+  // Send notification
+  const fd = new FormData();
+  fd.append('_subject', 'Mensaje del cliente — Nomand Studio');
+  fd.append('cliente', email);
+  fd.append('mensaje', msg);
+  fetch('https://formspree.io/f/xnjwwjbz', {method:'POST', body:fd, headers:{Accept:'application/json'}});
+}
+
+function fIco(n){
+  const e=(n||'').split('.').pop().toLowerCase();
+  if(['jpg','jpeg','png','gif','webp','heic'].includes(e))return'🖼';
+  if(e==='pdf')return'📄';
+  if(['mp4','mov','avi'].includes(e))return'🎬';
+  if(['mp3','wav','m4a'].includes(e))return'🎵';
+  if(['zip','rar'].includes(e))return'📦';
+  if(['ai','psd','fig'].includes(e))return'🎨';
+  return'📎';
+}
+
+let selF=[];
+function onFiles(inp){
+  selF=Array.from(inp.files);
+  document.getElementById('flist').innerHTML=selF.map(f=>
+    `<div style="display:flex;align-items:center;gap:8px;padding:7px 12px;background:rgba(255,255,255,0.5);border-radius:8px;margin-bottom:5px;font-size:12px;color:var(--text2)">${fIco(f.name)} ${f.name}<span style="margin-left:auto;color:var(--text3)">${(f.size/1024).toFixed(0)}KB</span></div>`
+  ).join('');
+}
+
+async function doUpload(email){
+  if(!selF.length){document.getElementById('fstatus').textContent='Selecciona al menos un archivo.';return;}
+  const statusEl = document.getElementById('fstatus');
+  statusEl.textContent='Subiendo archivos...';
+  
+  const desc = document.getElementById('fdesc').value || 'Sin descripción';
+  let uploaded = 0;
+  
+  for (const file of selF) {
+    const reader = new FileReader();
+    await new Promise((resolve) => {
+      reader.onload = async (e) => {
+        const base64 = e.target.result.split(',')[1];
+        try {
+          await fetch('https://script.google.com/macros/s/AKfycbxNomandUpload/exec', {
+            method: 'POST',
+            body: JSON.stringify({
+              fileName: file.name,
+              fileData: base64,
+              mimeType: file.type,
+              clientEmail: email,
+              description: desc
+            })
+          });
+          uploaded++;
+        } catch(err) {
+          console.log('Upload error:', err);
+        }
+        resolve();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Also send notification email
+  const fd = new FormData();
+  fd.append('_subject', 'Archivos solicitados subidos — Nomand Studio');
+  fd.append('cliente', email);
+  fd.append('archivos', selF.map(f=>f.name).join(', '));
+  fd.append('descripcion', desc);
+  await fetch('https://formspree.io/f/xnjwwjbz',{method:'POST',body:fd,headers:{Accept:'application/json'}});
+
+  statusEl.innerHTML='✅ Archivos enviados. El equipo de Nomand los revisará pronto.';
+  selF=[];document.getElementById('flist').innerHTML='';document.getElementById('finput').value='';document.getElementById('fdesc').value='';
+}
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+  // Handle invite/recovery links
+  const handled = await handleInviteToken();
+  if (handled) return;
+
+  const s=gs();
+  if(s.access_token&&s.user) showPortal(s.user);
+  document.getElementById('lpass').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
+});
+
+async function handleInviteToken() {
+  const hash = window.location.hash;
+  if (!hash) return false;
+  const params = new URLSearchParams(hash.replace('#',''));
+  const accessToken = params.get('access_token');
+  const type = params.get('type');
+  const error = params.get('error');
+
+  if (error) {
+    showTokenError(params.get('error_description') || 'El link expiró. Contacta a Nomand.');
+    return true;
+  }
+  if (accessToken && (type === 'invite' || type === 'recovery' || type === 'signup')) {
+    showSetPassword(accessToken);
+    return true;
+  }
+  return false;
+}
+
+function showTokenError(msg) {
+  document.getElementById('login-screen').style.display = 'none';
+  const div = document.createElement('div');
+  div.style.cssText = 'min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);';
+  div.innerHTML = `<div style="background:var(--card);border:1px solid var(--card-border);border-radius:24px;padding:44px 40px;max-width:400px;width:100%;text-align:center;box-shadow:var(--shadow-lg);">
+    <div style="font-size:40px;margin-bottom:16px;">⏱</div>
+    <div style="font-size:18px;font-weight:400;color:var(--text);margin-bottom:8px;">Link expirado</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:24px;">${msg}</div>
+    <div style="font-size:12px;color:var(--text3);">Escríbenos a<br><a href="mailto:nomand.studio@gmail.com" style="color:var(--orange)">nomand.studio@gmail.com</a></div>
+  </div>`;
+  document.body.appendChild(div);
+}
+
+function showSetPassword(accessToken) {
+  document.getElementById('login-screen').style.display = 'none';
+  const div = document.createElement('div');
+  div.id = 'set-pass-screen';
+  div.style.cssText = 'min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f2f0ec 0%,#ede9e3 100%);';
+  div.innerHTML = `<div style="background:rgba(255,255,255,0.75);border:1px solid rgba(255,255,255,0.88);border-radius:24px;padding:44px 40px;max-width:400px;width:100%;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.10);">
+    <div style="display:flex;align-items:center;gap:9px;margin-bottom:32px;">
+      <img src="./logo.png" style="width:26px;height:26px;object-fit:contain" onerror="this.style.display='none'">
+      <span style="font-size:12px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#1c1c1e;font-family:inherit;">Nomand Studio</span>
+    </div>
+    <div style="font-size:24px;font-weight:300;color:#1c1c1e;margin-bottom:6px;font-family:inherit;">Crea tu contraseña 🏔</div>
+    <div style="font-size:13px;color:#6c6c70;margin-bottom:28px;line-height:1.5;font-family:inherit;">Elige una contraseña segura para acceder a tu portal.</div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#aeaeb2;font-weight:700;margin-bottom:6px;font-family:inherit;">Nueva contraseña</label>
+      <input type="password" id="np-pass" placeholder="Mínimo 8 caracteres" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.09);border-radius:11px;font-family:inherit;font-size:14px;color:#1c1c1e;outline:none;">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#aeaeb2;font-weight:700;margin-bottom:6px;font-family:inherit;">Confirmar contraseña</label>
+      <input type="password" id="np-pass2" placeholder="Repite tu contraseña" style="width:100%;padding:12px 15px;background:rgba(255,255,255,0.6);border:1px solid rgba(0,0,0,0.09);border-radius:11px;font-family:inherit;font-size:14px;color:#1c1c1e;outline:none;">
+    </div>
+    <button onclick="saveNewPassword('${accessToken}')" style="width:100%;padding:13px;background:#F39200;border:none;border-radius:100px;font-family:inherit;font-size:14px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(243,146,0,0.28);">Guardar y entrar →</button>
+    <p id="np-err" style="font-size:12px;color:#ff3b30;text-align:center;margin-top:10px;display:none;"></p>
+  </div>`;
+  document.body.appendChild(div);
+}
+
+async function saveNewPassword(accessToken) {
+  const pass = document.getElementById('np-pass').value;
+  const pass2 = document.getElementById('np-pass2').value;
+  const err = document.getElementById('np-err');
+  if (pass.length < 8) { err.style.display='block'; err.textContent='Mínimo 8 caracteres.'; return; }
+  if (pass !== pass2) { err.style.display='block'; err.textContent='Las contraseñas no coinciden.'; return; }
+
+  const r = await fetch(SB + '/auth/v1/user', {
+    method: 'PUT',
+    headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: pass })
+  });
+  const d = await r.json();
+  if (d.id) {
+    ss({ access_token: accessToken, user: d, remember: false });
+    document.getElementById('set-pass-screen').remove();
+    showPortal(d);
+  } else {
+    err.style.display='block'; err.textContent='Error al guardar. Intenta de nuevo.';
+  }
+}
+</script>
+</body>
+</html>
