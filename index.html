@@ -474,6 +474,13 @@ async function doLogin() {
   const d = await r.json();
 
   if (d.access_token) {
+    const rol = d.user?.app_metadata?.rol || '';
+    if (rol === 'equipo') {
+      err.style.display = 'block';
+      err.textContent = 'Este es el portal de clientes. El acceso del equipo es desde nomand-equipo.vercel.app';
+      btn.textContent = 'Entrar'; btn.disabled = false;
+      return;
+    }
     ss({ ...d, remember: document.getElementById('rem').checked });
     showPortal(d.user);
   } else {
@@ -791,7 +798,28 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if (handled) return;
 
   const s=gs();
-  if(s.access_token&&s.user) showPortal(s.user);
+  // SSO: aceptar token pasado desde Nomand sin pedir login de nuevo
+  const urlParams = new URLSearchParams(window.location.search);
+  const ssoToken = urlParams.get('sso');
+  if (ssoToken) {
+    // Verificar token con Supabase
+    try {
+      const r = await fetch(SB + '/auth/v1/user', {
+        headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + ssoToken }
+      });
+      const u = await r.json();
+      if (u.id) {
+        const rol = u.app_metadata?.rol || '';
+        if (rol !== 'equipo') {
+          ss({ access_token: ssoToken, user: u, remember: false });
+          showPortal(u);
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      }
+    } catch(e) { console.warn('SSO error:', e); }
+  } else if(s.access_token&&s.user) {
+    showPortal(s.user);
+  }
   document.getElementById('lpass').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
 });
 
